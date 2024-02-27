@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        ".inc": "GBZ80",
+        "*.asm": "gbz80",
+        "interrupt.h": "c",
+        "sender.h": "c"
+    }
+}
