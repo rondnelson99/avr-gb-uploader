@@ -7,14 +7,15 @@
 
 void main()
 {
-	as_output(13);
+	as_output(12);
 	buffer_init();
-	// sender_init();
 	fetcher_init();
 	sei();
 	while (! fetcher_check_started()) {
 		fetcher_start();
 		_delay_ms(100);
 	}
-	while (true) {}
+	sender_init();
+	while (true) {
+	}
 }

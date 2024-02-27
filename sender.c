@@ -21,6 +21,7 @@ volatile uint16_t sendIndex;
 
 void sender_init() {
     transferState = NOT_STARTED;
+    buffer_read_block_advance(); // just hope this works I guess
     // Interrupt on, SPI on, MSB first, slave, Mode 3
     SPCR = (1<<SPIE) | (1<<SPE) | (3 << CPHA);
 }

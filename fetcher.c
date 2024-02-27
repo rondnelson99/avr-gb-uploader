@@ -13,6 +13,7 @@
 #define STARTING_BLOCK_NUMBER 1
 #define PACKET_LENGTH 128
 #define BAUD_CONSTANT_2X_115200 16
+#define BAUD_CONSTANT_2X_500000 3
 
 enum TransferState {
     NOT_STARTED,
@@ -42,7 +43,7 @@ void send_byte(uint8_t byte) {
 void fetcher_init() {
     UCSR0A = 1 << U2X0; // double speed for more accurate 115200 baud
     UCSR0C = 0b11 << UCSZ00; // 8-N-1
-    UBRR0 = BAUD_CONSTANT_2X_115200; // from manual
+    UBRR0 = BAUD_CONSTANT_2X_500000; // from manual
     UCSR0B = (1 << RXCIE0) | (1 << RXEN0) | (1 << TXEN0); // Enable TX, RX, RX interrupt
 
     if(buffer_push_block_advance()) {
@@ -72,7 +73,6 @@ void fetcher_buffer_ready() {
 }
 
 ISR (USART_RX_vect) {
-    pin_toggle(13);
     /*send_byte(transferState);
     send_byte(blockNumber);
     send_byte(sendIndex);*/

@@ -3,6 +3,7 @@
         ".inc": "GBZ80",
         "*.asm": "gbz80",
         "interrupt.h": "c",
-        "sender.h": "c"
+        "sender.h": "c",
+        "delay.h": "c"
     }
 }
