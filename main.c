@@ -10,7 +10,7 @@ void main()
 	as_output(13);
 	buffer_init();
 	// sender_init();
-	fetcher_start();
+	fetcher_init();
 	sei();
 	while (! fetcher_check_started()) {
 		fetcher_start();

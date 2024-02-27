@@ -39,21 +39,23 @@ void send_byte(uint8_t byte) {
     UDR0 = byte;
 }
 
-void fetcher_start() {
-    blockNumber = 1;
-
+void fetcher_init() {
     UCSR0A = 1 << U2X0; // double speed for more accurate 115200 baud
     UCSR0C = 0b11 << UCSZ00; // 8-N-1
     UBRR0 = BAUD_CONSTANT_2X_115200; // from manual
     UCSR0B = (1 << RXCIE0) | (1 << RXEN0) | (1 << TXEN0); // Enable TX, RX, RX interrupt
 
     if(buffer_push_block_advance()) {
+        blockNumber++;
         transferState = WAITING_FOR_HEADER;
         send_byte(NAK);
     }
     else {
         transferState = WAITING_FOR_BUFFER;
     }
+}
+void fetcher_start() {
+    send_byte(NAK);
 }
 
 bool fetcher_check_started() {
@@ -63,6 +65,7 @@ bool fetcher_check_started() {
 void fetcher_buffer_ready() {
     if (transferState == WAITING_FOR_BUFFER) {
         buffer_push_block_advance();
+        blockNumber++;
         send_byte(ACK); // tell sender to continue sending
         transferState = WAITING_FOR_HEADER;
     }
@@ -70,7 +73,9 @@ void fetcher_buffer_ready() {
 
 ISR (USART_RX_vect) {
     pin_toggle(13);
-    send_byte(transferState);
+    /*send_byte(transferState);
+    send_byte(blockNumber);
+    send_byte(sendIndex);*/
     uint8_t newByte = UDR0;
     switch (transferState) {
         case NOT_STARTED:
@@ -100,6 +105,7 @@ ISR (USART_RX_vect) {
         case WAITING_FOR_INVERSE_BLOCK_NUM:
             if (newByte == 255 - blockNumber) {
                 transferState = RECEIVING;
+                sendIndex = 0;
                 checksum = 0;
             }
             else {
@@ -121,6 +127,7 @@ ISR (USART_RX_vect) {
             if (newByte == checksum) {
                 // try to advance buffer block
                 if (buffer_push_block_advance()) {
+                    blockNumber++;
                     send_byte(ACK);
                     transferState = WAITING_FOR_HEADER;
                 }

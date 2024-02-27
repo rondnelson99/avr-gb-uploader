@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+void fetcher_init();
+
 void fetcher_start();
 
 bool fetcher_check_started();
